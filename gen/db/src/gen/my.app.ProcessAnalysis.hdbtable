@@ -1,0 +1,9 @@
+COLUMN TABLE my_app_ProcessAnalysis (
+  ID NVARCHAR(36) NOT NULL,
+  event_ID NVARCHAR(36),
+  summary NCLOB,
+  recommendations NCLOB,
+  sentiment NVARCHAR(5000),
+  analysedAt TIMESTAMP,
+  PRIMARY KEY(ID)
+)

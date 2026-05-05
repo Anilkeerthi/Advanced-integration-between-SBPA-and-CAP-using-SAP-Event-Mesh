@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+    <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+    <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+  </edmx:Reference>
+  <edmx:DataServices>
+    <Schema Namespace="ProcessService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <Annotation Term="Core.Links">
+        <Collection>
+          <Record>
+            <PropertyValue Property="rel" String="author"/>
+            <PropertyValue Property="href" String="https://cap.cloud.sap"/>
+          </Record>
+        </Collection>
+      </Annotation>
+      <EntityContainer Name="EntityContainer">
+        <EntitySet Name="ProcessEvents" EntityType="ProcessService.ProcessEvents"/>
+        <EntitySet Name="ProcessAnalysis" EntityType="ProcessService.ProcessAnalysis">
+          <NavigationPropertyBinding Path="event" Target="ProcessEvents"/>
+        </EntitySet>
+      </EntityContainer>
+      <EntityType Name="ProcessEvents">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="processId" Type="Edm.String"/>
+        <Property Name="processType" Type="Edm.String"/>
+        <Property Name="outcome" Type="Edm.String"/>
+        <Property Name="completedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="payload" Type="Edm.String"/>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+      </EntityType>
+      <EntityType Name="ProcessAnalysis">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <NavigationProperty Name="event" Type="ProcessService.ProcessEvents">
+          <ReferentialConstraint Property="event_ID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <Property Name="event_ID" Type="Edm.Guid"/>
+        <Property Name="summary" Type="Edm.String"/>
+        <Property Name="recommendations" Type="Edm.String"/>
+        <Property Name="sentiment" Type="Edm.String"/>
+        <Property Name="analysedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+      </EntityType>
+      <Annotations Target="ProcessService.ProcessEvents/ID">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="ProcessService.ProcessEvents/createdAt">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="ProcessService.ProcessAnalysis/ID">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="ProcessService.ProcessAnalysis/analysedAt">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

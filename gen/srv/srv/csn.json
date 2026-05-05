@@ -1,0 +1,208 @@
+{
+  "namespace": "my.app",
+  "definitions": {
+    "my.app.ProcessEvents": {
+      "kind": "entity",
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "processId": {
+          "type": "cds.String"
+        },
+        "processType": {
+          "type": "cds.String"
+        },
+        "outcome": {
+          "type": "cds.String"
+        },
+        "completedAt": {
+          "type": "cds.Timestamp"
+        },
+        "payload": {
+          "type": "cds.LargeString"
+        },
+        "createdAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "type": "cds.Timestamp"
+        }
+      }
+    },
+    "my.app.ProcessAnalysis": {
+      "kind": "entity",
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "event": {
+          "type": "cds.Association",
+          "target": "my.app.ProcessEvents",
+          "keys": [
+            {
+              "ref": [
+                "ID"
+              ]
+            }
+          ]
+        },
+        "summary": {
+          "type": "cds.LargeString"
+        },
+        "recommendations": {
+          "type": "cds.LargeString"
+        },
+        "sentiment": {
+          "type": "cds.String"
+        },
+        "analysedAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "type": "cds.Timestamp"
+        }
+      }
+    },
+    "ProcessService": {
+      "@source": "srv/cService.cds",
+      "kind": "service"
+    },
+    "ProcessService.ProcessEvents": {
+      "kind": "entity",
+      "projection": {
+        "from": {
+          "ref": [
+            "my.app.ProcessEvents"
+          ]
+        }
+      },
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "processId": {
+          "type": "cds.String"
+        },
+        "processType": {
+          "type": "cds.String"
+        },
+        "outcome": {
+          "type": "cds.String"
+        },
+        "completedAt": {
+          "type": "cds.Timestamp"
+        },
+        "payload": {
+          "type": "cds.LargeString"
+        },
+        "createdAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "type": "cds.Timestamp"
+        }
+      }
+    },
+    "ProcessService.ProcessAnalysis": {
+      "kind": "entity",
+      "projection": {
+        "from": {
+          "ref": [
+            "my.app.ProcessAnalysis"
+          ]
+        }
+      },
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "event": {
+          "type": "cds.Association",
+          "target": "ProcessService.ProcessEvents",
+          "keys": [
+            {
+              "ref": [
+                "ID"
+              ]
+            }
+          ]
+        },
+        "summary": {
+          "type": "cds.LargeString"
+        },
+        "recommendations": {
+          "type": "cds.LargeString"
+        },
+        "sentiment": {
+          "type": "cds.String"
+        },
+        "analysedAt": {
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "type": "cds.Timestamp"
+        }
+      }
+    },
+    "cds.outbox.Messages": {
+      "kind": "entity",
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "timestamp": {
+          "type": "cds.Timestamp"
+        },
+        "target": {
+          "type": "cds.String"
+        },
+        "msg": {
+          "type": "cds.LargeString"
+        },
+        "attempts": {
+          "type": "cds.Integer",
+          "default": {
+            "val": 0
+          }
+        },
+        "partition": {
+          "type": "cds.Integer",
+          "default": {
+            "val": 0
+          }
+        },
+        "lastError": {
+          "type": "cds.LargeString"
+        },
+        "lastAttemptTimestamp": {
+          "type": "cds.Timestamp"
+        },
+        "status": {
+          "type": "cds.String",
+          "length": 23
+        },
+        "task": {
+          "type": "cds.String",
+          "length": 255
+        },
+        "appid": {
+          "type": "cds.String",
+          "length": 255
+        }
+      }
+    }
+  },
+  "meta": {
+    "creator": "CDS Compiler v6.9.0",
+    "compilerVersion": "6.9.0",
+    "compilerCsnFlavor": "inferred",
+    "flavor": "inferred"
+  },
+  "$version": "2.0"
+}
