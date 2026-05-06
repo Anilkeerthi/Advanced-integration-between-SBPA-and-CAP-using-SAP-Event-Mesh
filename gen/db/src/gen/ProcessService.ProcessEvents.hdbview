@@ -1,9 +1,0 @@
-VIEW ProcessService_ProcessEvents AS SELECT
-  ProcessEvents_0.ID,
-  ProcessEvents_0.processId,
-  ProcessEvents_0.processType,
-  ProcessEvents_0.outcome,
-  ProcessEvents_0.completedAt,
-  ProcessEvents_0.payload,
-  ProcessEvents_0.createdAt
-FROM my_app_ProcessEvents AS ProcessEvents_0

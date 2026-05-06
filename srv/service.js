@@ -390,7 +390,7 @@ class SolaceService extends cds.MessagingService {
                 // 🔷 Message metadata logging
                 console.log("📥 Queue Message Received:");
                 console.log("   ➤ Payload:", data);
-               
+
 
                 // ✅ ACK
                 message.acknowledge();

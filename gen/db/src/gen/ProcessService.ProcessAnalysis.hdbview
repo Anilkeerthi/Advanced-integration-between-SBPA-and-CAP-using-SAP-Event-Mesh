@@ -1,8 +1,0 @@
-VIEW ProcessService_ProcessAnalysis AS SELECT
-  ProcessAnalysis_0.ID,
-  ProcessAnalysis_0.event_ID,
-  ProcessAnalysis_0.summary,
-  ProcessAnalysis_0.recommendations,
-  ProcessAnalysis_0.sentiment,
-  ProcessAnalysis_0.analysedAt
-FROM my_app_ProcessAnalysis AS ProcessAnalysis_0

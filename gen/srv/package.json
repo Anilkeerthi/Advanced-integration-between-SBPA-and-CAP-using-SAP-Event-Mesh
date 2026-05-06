@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@cap-js/hana": "^2",
+    "@google/genai": "^1.52.0",
     "@sap/cds": "^9",
     "@sap/xssec": "^4",
     "solclientjs": "^10.18.3"

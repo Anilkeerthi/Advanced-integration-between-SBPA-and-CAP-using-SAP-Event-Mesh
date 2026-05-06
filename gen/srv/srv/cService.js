@@ -1,7 +1,12 @@
 const cds = require('@sap/cds');
+const { GoogleGenAI } = require("@google/genai");
 module.exports = cds.service.impl(async function () {
     // Connect to the custom messaging service defined in package.json 
     const messaging = await cds.connect.to('messaging');
+
+    const ai = new GoogleGenAI({
+        apiKey: process.env.GEMINI_API_KEY || 'fRYbvO2eKaL2Tzsvx6OGZV3emr2EWHZt'
+    });
     /** 
      * Listener: TestTopicEP 
      * Handles incoming events from the Event Mesh and persists data to the database. 
@@ -33,36 +38,81 @@ module.exports = cds.service.impl(async function () {
         } catch (error) {
             console.error("❌ Error processing event:", error);
         }
+        const prompt = `
+Analyse this process completion event:
 
-        // const data = msg.data;
+Process Type: ${data.processType}
+Outcome: ${data.outcome}
+Duration: ${data.duration || 120}
 
-        // console.log("Event Received:", data);
+Provide:
+1. One sentence summary
+2. Sentiment (Positive/Neutral/Negative)
+3. Two process improvement recommendations
 
-        // // 1. Store Process Event
-        // const event = await INSERT.into('my.app.ProcessEvents').entries({
-        //     processId: data.processId,
-        //     processType: data.processType,
-        //     outcome: data.outcome,
-        //     completedAt: new Date(),
-        //     payload: JSON.stringify(data)
-        // });
+Respond ONLY in valid JSON format like:
 
-        // 2. Call AI (Mock / Replace with real API)
-        // const aiResponse = await callAI(data);
+{
+  "summary": "...",
+  "sentiment": "...",
+  "recommendations": [
+    "...",
+    "..."
+  ]
+}
+`;
 
-        // // 3. Store AI Analysis
-        // await INSERT.into('my.app.ProcessAnalysis').entries({
-        //     event_ID: event.ID,
-        //     summary: aiResponse.summary,
-        //     recommendations: aiResponse.recommendations,
-        //     sentiment: aiResponse.sentiment,
-        //     analysedAt: new Date()
-        // });
+        console.log("🤖 Calling Gemini AI...");
 
-        // 4. Optional: Publish rejected event
-        // if (data.outcome === "Rejected") {
-        //     await messaging.emit('cy/techies/processes/rejected', data);
-        // }
+        const response = await ai.models.generateContent({
+            model: "gemini-2.0-flash",
+            contents: prompt
+        });
+
+        const aiText = response.text;
+
+        console.log("🤖 AI Response:", aiText);
+        let analysis;
+
+        try {
+
+            analysis = JSON.parse(aiText);
+
+        } catch (err) {
+
+            // Remove markdown if returned
+            const cleaned = aiText
+                .replace(/```json/g, '')
+                .replace(/```/g, '')
+                .trim();
+
+            analysis = JSON.parse(cleaned);
+        }
+        try {
+            await INSERT.into('my.app.ProcessAnalysis').entries({
+
+                ID: cds.utils.uuid(),
+
+                event_ID: event.ID,
+
+                summary: response.summary,
+
+                recommendations: JSON.stringify(
+                    response.recommendations
+                ),
+
+                sentiment: response.sentiment,
+
+                analysedAt: new Date()
+            });
+
+            console.log("✅ Process analysis stored");
+
+        } catch (error) {
+
+            console.error("❌ Error processing event:", error);
+
+        }
     });
 
 }); 
